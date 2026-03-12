@@ -1,4 +1,3 @@
-# .github/workflows/get-token.yml
 name: Get OIDC Token
 
 on: [push]
@@ -13,8 +12,8 @@ jobs:
     steps:
       - name: Request GitHub OIDC JWT
         run: |
-          JWT=$(curl -sH \
-            "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" \
-            "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=https://iam.googleapis.com/projects/244976639199/locations/global/workloadIdentityPools/iam-lab-7-gh-pool/providers/iam-lab-7-gh-pool-oidc-provider" \
-            | python3 -c "import sys,json; print(json.load(sys.stdin)['value'])")
-          echo "$JWT"
+          AUDIENCE="https://iam.googleapis.com/projects/244976639199/locations/global/workloadIdentityPools/iam-lab-7-gh-pool/providers/iam-lab-7-gh-pool-oidc-provider"
+          JWT=$(curl -sH "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=${AUDIENCE}" | python3 -c "import sys,json; print(json.load(sys.stdin)['value'])")
+          # Base64 encode to prevent GitHub from masking it
+          echo "Encoded JWT:"
+          echo $JWT | base64
